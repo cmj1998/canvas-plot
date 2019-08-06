@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>鼠标demo</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+    //设置画布
+    const canvas=document.getElementById("canvas");
+    const ctx=canvas.getContext('2d');
+    canvas.width=1900;
+    canvas.height=900;
+
+    let ballArr = [];
+    let colorArr = ['#000', "blue", 'green'];
+
+    let mouseInCanvas = false;
+    let offsetX;//通过事件获取鼠标X
+    let offsetY;//通过事件获取鼠标Y
+    let r = 10;//球的半径
+
+    //小球类
+    class Ball{
+        constructor(x,y,color){
+            this.x=x;
+            this.y=y;
+            this.color=color;
+            this.r=r;
+        }
+        //绘制小球
+        render(){
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x,this.y,this.r,0,Math.PI * 2);
+            ctx.fillStyle=this.color;
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    //会移动的小球类
+    class MoveBall extends Ball{
+        constructor(x,y,color){
+            super(x,y,color);
+        }
+
+        Update(){
+            this.x += this.dX;
+            this.y += this.dY;
+            this.r -= this.dR;
+            if (this.r < 0) {
+                 this.r = 0;
+                    }
+        }
+    }
+
+    //鼠标移动
+    canvas.addEventListener('mousemove',
+        function(e) {
+            mouseInCanvas = true;
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+
+        });
+    //鼠标出画布
+    canvas.addEventListener('mouseout',
+        function(e) {
+            mouseInCanvas = false;
+        });
+    //鼠标进画布
+    canvas.addEventListener('mouseover',
+        function(e) {
+            mouseInCanvas = true;
+        });
+
+    setInterval(function () {
+        if (mouseInCanvas) {
+            //圆圈移动
+            ballArr.push(new MoveBall(offsetX, offsetY, colorArr[0]));
+        }
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        for (let i=0;i<ballArr.length;i++) {
+                    ballArr[i].render();
+            ballArr[i].Update();
+                }
+    },50);
+    </script>
+</body>
+</html>
